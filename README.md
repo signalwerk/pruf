@@ -2,7 +2,7 @@
 
 framework agnostic validation library
 
-[![Downloads][downloads-badge]][downloads] ![Lines](https://img.shields.io/badge/Coverage-97.67%25-brightgreen.svg)
+![npm](https://img.shields.io/npm/v/pruf) ![NPM](https://img.shields.io/npm/l/pruf) ![Lines](https://img.shields.io/badge/Coverage-97.67%25-brightgreen.svg)
 
 ## Installation
 
@@ -149,3 +149,7 @@ result = {
 };
 */
 ```
+
+## License & Authors
+
+[MIT](https://opensource.org/licenses/mit) · Started by [signalwerk](https://github.com/signalwerk) supported by [contributors](https://github.com/signalwerk/pruf/graphs/contributors)
