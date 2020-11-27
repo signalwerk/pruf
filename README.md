@@ -2,7 +2,7 @@
 
 framework agnostic validation library
 
-[![Downloads][downloads-badge]][downloads] ![Lines](https://img.shields.io/badge/Coverage-0%25-brightgreen.svg)
+[![Downloads][downloads-badge]][downloads] ![Lines](https://img.shields.io/badge/Coverage-97.67%25-brightgreen.svg)
 
 ## Installation
 
