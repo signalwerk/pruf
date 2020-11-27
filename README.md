@@ -68,6 +68,24 @@ result = {
 
 ## Data and rules can be nested
 
+```js
+import { validate, required, between } from "pruf";
+
+const data = {
+  data: {
+    name: "",
+  },
+};
+
+const rule = {
+  data: {
+    name: {
+      required,
+    },
+  },
+};
+```
+
 ## Custom validators
 
 Custom validations can be defined by adding simple functions:
@@ -83,4 +101,51 @@ const rule = {
   dataYeah: { required, isPruf },
   dataNo: { required, isPruf },
 };
+```
+
+## Grouping
+
+Sometimes it's useful to have validations grouped. This can be achieved if the key `include` is set with an array of include paths.
+
+```js
+const rule = {
+  name: {
+    firsName: {
+      required,
+    },
+  },
+  age: {
+    required,
+  },
+  person: {
+    include: ["name.firsName", "age"], // ← 💫 includes
+  },
+};
+/*
+result = {
+  valid: false,
+  name: {
+    valid: false,
+    firsName: {
+      valid: true,
+      required: true,
+    },
+  },
+  age: {
+    valid: false,
+    required: false,
+  },
+  person: {
+    valid: false,
+    "name.firsName": {
+      valid: true,
+      required: true,
+    },
+    age: {
+      valid: false,
+      required: false,
+    },
+  },
+};
+*/
 ```

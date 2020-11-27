@@ -1,3 +1,4 @@
+import Get from "./util/get";
 export const required = (value) => {
   if (value === false) {
     return true;
@@ -45,25 +46,38 @@ const traverse = (ruleObj, dataObj, options) => {
           [rule]: valid,
         };
       } else {
-        let validObj = traverse(ruleObj[rule], dataObj[rule] || {}, {
-          ...options,
-          parent: {
-            rule,
-            dataObj,
-          },
-        });
+        if (rule !== "include") {
+          let validObj = traverse(ruleObj[rule], dataObj[rule] || {}, {
+            ...options,
+            parent: {
+              rule,
+              dataObj,
+              result,
+            },
+          });
 
-        if (validObj.globalValid === false) {
-          globalValid = false;
+          if (validObj.globalValid === false) {
+            globalValid = false;
+          }
+
+          result = {
+            ...result,
+            [validKey]: result[validKey] && validObj.globalValid,
+            [rule]: validObj.result,
+          };
         }
-
-        result = {
-          ...result,
-          [validKey]: result[validKey] && validObj.globalValid,
-          [rule]: validObj.result,
-        };
       }
     }
+  }
+
+  // for includes
+  if (ruleObj.include) {
+    let isValid = true;
+    ruleObj.include.forEach((item) => {
+      let validObj = Get(parent.result, item);
+      result[validKey] = result[validKey] && validObj[validKey];
+      result[item] = validObj;
+    });
   }
 
   return { result, globalValid };

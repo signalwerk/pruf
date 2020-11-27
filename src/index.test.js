@@ -1,6 +1,76 @@
 /* globals test describe  expect */
 import { validate, required, between } from ".";
 
+describe("validate with grouping", () => {
+  test("simple validation", async () => {
+    const rule = {
+      name: {
+        firsName: {
+          required,
+        },
+        familyName: {
+          required,
+        },
+      },
+      age: {
+        required,
+      },
+      zip: {
+        required,
+        between: between(999, 10000),
+      },
+      person: {
+        include: ["name.firsName", "age"],
+      },
+    };
+
+    const data = {
+      name: {
+        firsName: "Jane",
+        familyName: "",
+      },
+      age: null,
+      zip: 500,
+    };
+
+    expect(validate(rule, data)).toEqual({
+      valid: false,
+      name: {
+        valid: false,
+        firsName: {
+          valid: true,
+          required: true,
+        },
+        familyName: {
+          valid: false,
+          required: false,
+        },
+      },
+      age: {
+        valid: false,
+        required: false,
+      },
+      zip: {
+        valid: false,
+        required: true,
+        between: false,
+      },
+
+      person: {
+        valid: false,
+        "name.firsName": {
+          valid: true,
+          required: true,
+        },
+        age: {
+          valid: false,
+          required: false,
+        },
+      },
+    });
+  });
+});
+
 describe("validate with custom inline function", () => {
   test("require in simple obj", async () => {
     const rule = {
