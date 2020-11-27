@@ -1,0 +1,57 @@
+{
+  "name": "pruf",
+  "version": "0.0.1",
+  "author": "Stefan Huber, Signalwerk GmbH",
+  "description": "framework agnostic validation library",
+  "keywords": [
+    "validation",
+    "react",
+    "vue"
+  ],
+  "license": "MIT",
+  "main": "dist/pruf.cjs.js",
+  "module": "dist/pruf.esm.js",
+  "browser": "dist/pruf.umd.js",
+  "homepage": "https://github.com/signalwerk/pruf#readme",
+  "bugs": {
+    "url": "https://github.com/signalwerk/pruf/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/signalwerk/pruf.git"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^26.6.3",
+    "prettier-eslint": "^12.0.0",
+    "rollup": "^2.33.3",
+    "rollup-plugin-babel": "^4.4.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint",
+    "build:watch": "rollup -c -w",
+    "jest": "jest",
+    "jest:coverage": "npm run jest -- --coverage --coverageReporters='json-summary'",
+    "badge:update": "npm run jest:coverage && npx istanbul-badges-readme",
+    "test": "npm run lint && npm run jest",
+    "test:watch": "npm run jest -- --watch",
+    "publish": "npm run jest:coverage && npx istanbul-badges-readme && npm run test && npm run build && npm publish"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "js-yaml": "^3.14.0",
+    "mdast-util-toc": "^5.1.0"
+  }
+}
