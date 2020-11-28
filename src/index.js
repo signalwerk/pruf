@@ -11,9 +11,15 @@ export const between = (min, max) => (value) => {
   return value > min && value < max;
 };
 
-const hasProp = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+const hasProp = (obj, prop) =>
+  !!obj && !!prop && Object.prototype.hasOwnProperty.call(obj, prop);
 
-const isObject = (obj) => obj === Object(obj);
+const isObject = (obj) => {
+  return typeof obj === "object" && !!obj;
+};
+
+const isBoolean = (obj) =>
+  obj === true || obj === false || toString.call(obj) === "[object Boolean]";
 
 const isFunction = (obj) => {
   return !!(obj && obj.constructor && obj.call && obj.apply);
@@ -25,11 +31,9 @@ const traverse = (ruleObj, dataObj, options) => {
   parent = parent || {};
   validKey = validKey || "valid";
   includeKey = includeKey || "include";
-  visitor = visitor || {
-    apply: (item) => {},
-  };
-
-  let globalValid = true;
+  // visitor = visitor || {
+  //   apply: (item) => {},
+  // };
 
   let result = {
     [validKey]: true,
@@ -37,56 +41,77 @@ const traverse = (ruleObj, dataObj, options) => {
 
   for (const rule in ruleObj) {
     if (hasProp(ruleObj, rule)) {
-      if (isFunction(ruleObj[rule])) {
-        let valid = !!ruleObj[rule](parent.dataObj[parent.rule]);
+      if (isObject(ruleObj[rule])) {
+        // handling without includes
+        if (!hasProp(ruleObj, includeKey)) {
+          let validObj = traverse(
+            ruleObj[rule],
+            dataObj[rule],
 
-        if (valid === false) {
-          globalValid = false;
-        }
-
-        result = {
-          ...result,
-          [validKey]: result[validKey] && valid,
-          [rule]: valid,
-        };
-      } else {
-        if (rule !== includeKey) {
-          let validObj = traverse(ruleObj[rule], dataObj[rule] || {}, {
-            ...options,
-            parent: {
-              rule,
-              dataObj,
-              result,
-            },
-          });
-
-          if (validObj.globalValid === false) {
-            globalValid = false;
-          }
+            {
+              ...options,
+              parent: {
+                rule,
+                dataObj,
+                result,
+              },
+            }
+          );
 
           result = {
             ...result,
-            [validKey]: result[validKey] && validObj.globalValid,
-            [rule]: validObj.result,
+            [rule]: validObj,
+            [validKey]: result[validKey] && validObj[validKey],
+          };
+        } else {
+          // handling for includes
+
+          let groupResult = {
+            [validKey]: true,
+          };
+          ruleObj[includeKey].forEach((item) => {
+            let validObj = Get(parent.result, item);
+
+            let isValid = false;
+            if (isBoolean(validObj)) {
+              isValid = validObj;
+            }
+
+            if (hasProp(validObj, validKey)) {
+              isValid = validObj[validKey];
+            }
+
+            groupResult = {
+              ...groupResult,
+              [item]: validObj,
+              [validKey]: result[validKey] && isValid,
+            };
+          });
+
+          result = {
+            ...result,
+            ...groupResult,
+            [validKey]: result[validKey] && groupResult[validKey],
           };
         }
+      } else {
+        // validate
+        let isValid = !!ruleObj[rule](dataObj);
+
+        result = {
+          ...result,
+          [validKey]: result[validKey] && isValid,
+          [rule]: isValid,
+        };
       }
     }
   }
 
-  // for includes
-  if (ruleObj[includeKey]) {
-    let isValid = true;
-    ruleObj[includeKey].forEach((item) => {
-      let validObj = Get(parent.result, item);
-      result[validKey] = result[validKey] && validObj[validKey];
-      result[item] = validObj;
-    });
-  }
-
-  return { result, globalValid };
+  return result;
 };
 
 export const validate = (ruleObj, dataObj, options) => {
-  return traverse(ruleObj, dataObj, options).result;
+  const result = traverse(ruleObj, dataObj, options);
+
+  return result;
 };
