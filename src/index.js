@@ -13,17 +13,21 @@ export const between = (min, max) => (value) => {
 
 const hasProp = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
 
+const isObject = (obj) => obj === Object(obj);
+
 const isFunction = (obj) => {
   return !!(obj && obj.constructor && obj.call && obj.apply);
 };
 
 const traverse = (ruleObj, dataObj, options) => {
   // set prefs
-  let { root, level, validKey, parent } = options || {};
+  let { validKey, parent, visitor, includeKey } = options || {};
   parent = parent || {};
-  root = root || {};
-  level = level || 0;
   validKey = validKey || "valid";
+  includeKey = includeKey || "include";
+  visitor = visitor || {
+    apply: (item) => {},
+  };
 
   let globalValid = true;
 
@@ -46,7 +50,7 @@ const traverse = (ruleObj, dataObj, options) => {
           [rule]: valid,
         };
       } else {
-        if (rule !== "include") {
+        if (rule !== includeKey) {
           let validObj = traverse(ruleObj[rule], dataObj[rule] || {}, {
             ...options,
             parent: {
@@ -71,9 +75,9 @@ const traverse = (ruleObj, dataObj, options) => {
   }
 
   // for includes
-  if (ruleObj.include) {
+  if (ruleObj[includeKey]) {
     let isValid = true;
-    ruleObj.include.forEach((item) => {
+    ruleObj[includeKey].forEach((item) => {
       let validObj = Get(parent.result, item);
       result[validKey] = result[validKey] && validObj[validKey];
       result[item] = validObj;

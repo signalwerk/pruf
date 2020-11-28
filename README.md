@@ -19,7 +19,7 @@ import { validate, required, between } from "pruf";
 
 const data = {
   name: "",
-  age: 20,
+  data: { age: 14 },
   zip: 500,
 };
 
@@ -27,8 +27,11 @@ const rule = {
   name: {
     required,
   },
-  age: {
-    required,
+  data: {
+    age: {
+      required,
+      over16: (value) => value > 16,
+    },
   },
   zip: {
     required,
@@ -37,16 +40,24 @@ const rule = {
 };
 
 const result = validate(rule, data);
-/*
-result = {
+```
+
+the validation results in a new object with `valid`-keys corresponding to the validations done.
+
+```js
+const result = {
   valid: false,
   name: {
     valid: false,
     required: false,
   },
-  age: {
-    valid: true,
-    required: true,
+  data: {
+    valid: false,
+    age: {
+      valid: false,
+      required: true,
+      over16: false,
+    },
   },
   zip: {
     valid: false,
@@ -54,7 +65,86 @@ result = {
     between: false,
   },
 };
-*/
+```
+
+## `validate()`
+
+Pruf provides you a simple way to validate data by a set if rules.
+
+With `validate(rule, data, options?)` you validate an object `data` by a set of rules provided in a `rule` object. With an `options` object you can control some additional behaviour.
+
+### `rule`
+
+The validation follows this set of rules. If a value in the `rule` object is a `function` this will be used as the validator for the corresponding `data`.  
+The `return` will have the same structure as the rule.
+
+```js
+const rule = {
+  name: {
+    required,
+  },
+  data: {
+    age: {
+      required,
+      over16: (value) => value > 16,
+    },
+  },
+  zip: {
+    required,
+    between: between(999, 10000),
+  },
+};
+```
+
+### `data`
+
+Any kind of object. Including deeply nested objects.
+
+```js
+const data = {
+  name: "",
+  data: { age: 14 },
+  zip: 500,
+};
+```
+
+### `options`
+
+#### `validKey`
+
+`string?` — default: `valid`  
+The name of the key generated during validation.
+
+#### `includeKey`
+
+`string?` — default: `include`
+The name of the key to detect groups during validation.
+
+### `return`
+
+The result of the function returns a new object where each object will have a `valid`-key with the result of the validation of the values and sub-values. Each validator will leave a key in the object.
+
+```js
+const result = {
+  valid: false,
+  name: {
+    valid: false,
+    required: false,
+  },
+  data: {
+    valid: false,
+    age: {
+      valid: false,
+      required: true,
+      over16: false,
+    },
+  },
+  zip: {
+    valid: false,
+    required: true,
+    between: false,
+  },
+};
 ```
 
 ## Validators
@@ -65,26 +155,6 @@ result = {
 | -------- | ---------- | ------------------------------------------------------------------------ |
 | required | –          | Checks if a value is given                                               |
 | between  | min, max   | Checks if a number is between min and max. Min and max are not included. |
-
-## Data and rules can be nested
-
-```js
-import { validate, required, between } from "pruf";
-
-const data = {
-  data: {
-    name: "",
-  },
-};
-
-const rule = {
-  data: {
-    name: {
-      required,
-    },
-  },
-};
-```
 
 ## Custom validators
 
@@ -121,8 +191,10 @@ const rule = {
     include: ["name.firsName", "age"], // ← 💫 includes
   },
 };
-/*
-result = {
+```
+
+```js
+const result = {
   valid: false,
   name: {
     valid: false,
@@ -147,8 +219,11 @@ result = {
     },
   },
 };
-*/
 ```
+
+## Credits
+
+`pruf` is inspred by projects like [vuelidate](https://vuelidate.js.org/), [formik](https://formik.org/) and many others.
 
 ## License & Authors
 

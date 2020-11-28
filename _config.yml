@@ -1,0 +1,5 @@
+# this file is to control the gh-page generation
+title: pruf
+description: framework agnostic validation library
+show_downloads: false
+theme: jekyll-theme-cayman
