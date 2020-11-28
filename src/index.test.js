@@ -1,5 +1,67 @@
 /* globals test describe  expect */
-import { validate, required, between } from ".";
+import { validate, required, between, reporter } from ".";
+
+describe("validate with message helper", () => {
+  test("simple validation", async () => {
+    const rule = {
+      name: {
+        required: reporter(required, "Please provide a name"),
+      },
+    };
+    const data = {
+      name: "",
+    };
+    const result = {
+      valid: false,
+      name: {
+        valid: false,
+        required: {
+          valid: false,
+          error: "Please provide a name",
+        },
+      },
+    };
+
+    expect(validate(rule, data)).toEqual(result);
+  });
+});
+
+describe("validate with visitor", () => {
+  test("simple validation", async () => {
+    const rule = {
+      name: {
+        isTruthy: true,
+      },
+      age: {
+        isFalsy: false,
+      },
+    };
+    const data = {
+      name: "Hello",
+      age: null,
+    };
+    const result = {
+      valid: true,
+      name: {
+        valid: true,
+        isTruthy: true,
+      },
+      age: {
+        valid: true,
+        isFalsy: true,
+      },
+    };
+
+    const visitor = {
+      isValidator: ({ value }) => value === true || value === false,
+      validate: ({ validator, data }) => {
+        return validator === false ? !!data === false : !!data === true;
+      },
+    };
+
+    expect(validate(rule, data, { visitor })).toEqual(result);
+  });
+});
 
 describe("validate with grouping", () => {
   test("simple validation", async () => {
@@ -158,8 +220,8 @@ describe("check example from readme", () => {
         },
       },
       zip: {
-        required,
-        between: between(999, 10000),
+        required: reporter(required, "Please enter ZIP"),
+        between: reporter(between(999, 10000), "Invalid ZIP"),
       },
     };
     const result = {
@@ -178,8 +240,8 @@ describe("check example from readme", () => {
       },
       zip: {
         valid: false,
-        required: true,
-        between: false,
+        required: { valid: true },
+        between: { valid: false, error: "Invalid ZIP" },
       },
     };
     expect(validate(rule, data)).toEqual(result);

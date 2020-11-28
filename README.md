@@ -34,8 +34,8 @@ const rule = {
     },
   },
   zip: {
-    required,
-    between: between(999, 10000),
+    required: reporter(required, "Please enter ZIP"),
+    between: reporter(between(999, 10000), "Invalid ZIP"),
   },
 };
 
@@ -61,8 +61,8 @@ const result = {
   },
   zip: {
     valid: false,
-    required: true,
-    between: false,
+    required: { valid: true },
+    between: { valid: false, error: "Invalid ZIP" },
   },
 };
 ```
@@ -90,8 +90,9 @@ const rule = {
     },
   },
   zip: {
-    required,
-    between: between(999, 10000),
+    valid: false,
+    required: { valid: true },
+    between: { valid: false, error: "Invalid ZIP" },
   },
 };
 ```
@@ -120,6 +121,61 @@ The name of the key generated during validation.
 `string?` — default: `include`
 The name of the key to detect groups during validation.
 
+#### `visitor`
+
+`object?` — default:
+
+```js
+{
+  isValidator: ({ value }) => typeof value === "function",
+  validate: ({ validator, data }) => validator(data),
+}
+```
+
+If the default behaviour to recognise validators and to validate needs to be adjusted a custom visitor (walker) can be defined.
+
+Example for error-messages:
+
+```js
+const rule = {
+  name: {
+    isTruthy: true,
+  },
+  age: {
+    isFalsy: false,
+  },
+};
+const data = {
+  name: "Hello",
+  age: null,
+};
+
+const visitor = {
+  isValidator: ({ value }) => value === true || value === false,
+  validate: ({ validator, data }) => {
+    return validator === false ? !!data === false : !!data === true;
+  },
+};
+
+const result = validate(rule, data, { visitor });
+```
+
+The visitor detects a validator by the boolean return of a function in the key `isValidator`.
+The validation in the key `validate` can return a `boolean` or an `object`. If the return is an `object` the the key `valid` must be present (corresponding to `validKey`) .
+
+```js
+const result = {
+  valid: false,
+  name: {
+    valid: false,
+    required: {
+      valid: false,
+      error: "Please provide a name",
+    },
+  },
+};
+```
+
 ### `return`
 
 The result of the function returns a new object where each object will have a `valid`-key with the result of the validation of the values and sub-values. Each validator will leave a key in the object.
@@ -141,8 +197,8 @@ const result = {
   },
   zip: {
     valid: false,
-    required: true,
-    between: false,
+    required: { valid: true },
+    between: { valid: false, error: "Invalid ZIP" },
   },
 };
 ```
