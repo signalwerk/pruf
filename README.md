@@ -15,7 +15,7 @@ npm i --save pruf
 Import `validate` to validate objects by a set of rules
 
 ```js
-import { validate, required, between } from "pruf";
+import { validate, required, between, reporter } from "pruf";
 
 const data = {
   name: "",
@@ -67,13 +67,13 @@ const result = {
 };
 ```
 
-## `validate()`
+## Validation `validate()`
 
 Pruf provides you a simple way to validate data by a set if rules.
 
 With `validate(rule, data, options?)` you validate an object `data` by a set of rules provided in a `rule` object. With an `options` object you can control some additional behaviour.
 
-### `rule`
+### Validation first argument (`rule`)
 
 The validation follows this set of rules. If a value in the `rule` object is a `function` this will be used as the validator for the corresponding `data`.  
 The `return` will have the same structure as the rule.
@@ -97,7 +97,7 @@ const rule = {
 };
 ```
 
-### `data`
+### Validation second argument (`data`)
 
 Any kind of object. Including deeply nested objects.
 
@@ -109,19 +109,19 @@ const data = {
 };
 ```
 
-### `options`
+### Validation third argument (`options`)
 
-#### `validKey`
+#### Key `validKey`
 
 `string?` — default: `valid`  
 The name of the key generated during validation.
 
-#### `includeKey`
+#### Key `includeKey`
 
 `string?` — default: `include`
 The name of the key to detect groups during validation.
 
-#### `visitor`
+#### Key `visitor`
 
 `object?` — default:
 
@@ -176,7 +176,7 @@ const result = {
 };
 ```
 
-### `return`
+### Return value (`return`)
 
 The result of the function returns a new object where each object will have a `valid`-key with the result of the validation of the values and sub-values. Each validator will leave a key in the object.
 
@@ -211,6 +211,37 @@ const result = {
 | -------- | ---------- | ------------------------------------------------------------------------------------------------------- |
 | required | –          | Checks if a value is given. `required([]) === true`, `required(0) === true`, `required(false) === true` |
 | between  | min, max   | Checks if a number is between min and max. Min and max are not included.                                |
+
+## `reporter`
+
+If an error-message on the result object is needed a helper function `reporter` is provided. The reporter transforms a `validator` result to a object with the message in an `error` key and a key `valid` with the result of the `validator`.
+
+```js
+import { validate, required, between, reporter } from "pruf";
+
+const data = {
+  zip: 500,
+};
+
+const rule = {
+  zip: {
+    required: required,
+    between: reporter(between(999, 10000), "Invalid ZIP"),
+  },
+};
+
+const result = validate(rule, data);
+```
+
+```js
+const result = {
+  zip: {
+    valid: false,
+    required: true,
+    between: { valid: false, error: "Invalid ZIP" },
+  },
+};
+```
 
 ## Custom validators
 
