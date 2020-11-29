@@ -132,9 +132,7 @@ The name of the key to detect groups during validation.
 }
 ```
 
-If the default behaviour to recognise validators and to validate needs to be adjusted a custom visitor (walker) can be defined.
-
-Example for error-messages:
+A custom visitor (walker) can be defined to adjust the default behaviour to recognise validators and to validate the corresponding values.
 
 ```js
 const rule = {
@@ -165,13 +163,14 @@ The validation in the key `validate` can return a `boolean` or an `object`. If t
 
 ```js
 const result = {
-  valid: false,
+  valid: true,
   name: {
-    valid: false,
-    required: {
-      valid: false,
-      error: "Please provide a name",
-    },
+    valid: true,
+    isTruthy: true,
+  },
+  age: {
+    valid: true,
+    isFalsy: true,
   },
 };
 ```
@@ -212,7 +211,7 @@ const result = {
 | required | –          | Checks if a value is given. `required([]) === true`, `required(0) === true`, `required(false) === true` |
 | between  | min, max   | Checks if a number is between min and max. Min and max are not included.                                |
 
-## `reporter`
+## Validation messages (`reporter`)
 
 If an error-message on the result object is needed a helper function `reporter` is provided. The reporter transforms a `validator` result to a object with the message in an `error` key and a key `valid` with the result of the `validator`.
 
