@@ -1,11 +1,9 @@
 import Get from "./util/get";
-export const required = (value) => {
-  if (value === false) {
-    return true;
-  }
+import { required as _required } from "./validator/required";
+import { between as _between } from "./validator/between";
 
-  return !!value;
-};
+export const required = _required;
+export const between = _between;
 
 export const reporter = (validator, message) => {
   return (value) => {
@@ -17,16 +15,8 @@ export const reporter = (validator, message) => {
   };
 };
 
-export const between = (min, max) => (value) => {
-  return value > min && value < max;
-};
-
 const hasProp = (obj, prop) =>
   !!obj && !!prop && Object.prototype.hasOwnProperty.call(obj, prop);
-
-const isObject = (obj) => {
-  return typeof obj === "object" && !!obj;
-};
 
 const isBoolean = (obj) =>
   obj === true || obj === false || toString.call(obj) === "[object Boolean]";
@@ -63,59 +53,57 @@ const traverse = (ruleObj, dataObj, options) => {
     [validKey]: true,
   };
 
-  for (const rule in ruleObj) {
-    if (hasProp(ruleObj, rule)) {
-      if (visitor.isValidator({ value: ruleObj[rule] })) {
-        // validate
-        const value = visitor.validate({
-          validator: ruleObj[rule],
-          data: dataObj,
-        });
+  for (const [rule] of Object.entries(ruleObj)) {
+    if (visitor.isValidator({ value: ruleObj[rule] })) {
+      // validate
+      const value = visitor.validate({
+        validator: ruleObj[rule],
+        data: dataObj,
+      });
 
-        const isValid = isValidLike(value, validKey);
+      const isValid = isValidLike(value, validKey);
+
+      result = {
+        ...result,
+        [validKey]: result[validKey] && isValid,
+        [rule]: value,
+      };
+    } else {
+      // handling without includes
+      if (!hasProp(ruleObj, includeKey)) {
+        let validObj = traverse(ruleObj[rule], dataObj[rule], {
+          ...options,
+          parent: result,
+        });
 
         result = {
           ...result,
-          [validKey]: result[validKey] && isValid,
-          [rule]: value,
+          [rule]: validObj,
+          [validKey]: result[validKey] && validObj[validKey],
         };
       } else {
-        // handling without includes
-        if (!hasProp(ruleObj, includeKey)) {
-          let validObj = traverse(ruleObj[rule], dataObj[rule], {
-            ...options,
-            parent: result,
-          });
+        // handling for includes
 
-          result = {
-            ...result,
-            [rule]: validObj,
-            [validKey]: result[validKey] && validObj[validKey],
-          };
-        } else {
-          // handling for includes
+        let groupResult = {
+          [validKey]: true,
+        };
+        ruleObj[includeKey].forEach((item) => {
+          let validObj = Get(parent, item);
 
-          let groupResult = {
-            [validKey]: true,
-          };
-          ruleObj[includeKey].forEach((item) => {
-            let validObj = Get(parent, item);
+          const isValid = isValidLike(validObj, validKey);
 
-            const isValid = isValidLike(validObj, validKey);
-
-            groupResult = {
-              ...groupResult,
-              [item]: validObj,
-              [validKey]: result[validKey] && isValid,
-            };
-          });
-
-          result = {
-            ...result,
+          groupResult = {
             ...groupResult,
-            [validKey]: result[validKey] && groupResult[validKey],
+            [item]: validObj,
+            [validKey]: result[validKey] && isValid,
           };
-        }
+        });
+
+        result = {
+          ...result,
+          ...groupResult,
+          [validKey]: result[validKey] && groupResult[validKey],
+        };
       }
     }
   }

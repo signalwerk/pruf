@@ -2,7 +2,7 @@
 
 framework agnostic validation library
 
-![npm](https://img.shields.io/npm/v/pruf) ![NPM](https://img.shields.io/npm/l/pruf) ![Lines](https://img.shields.io/badge/Coverage-97.67%25-brightgreen.svg)
+![npm](https://img.shields.io/npm/v/pruf) ![NPM](https://img.shields.io/npm/l/pruf) ![Lines](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)
 
 ## Installation
 
@@ -207,10 +207,10 @@ const result = {
 
 `pruf` comes with some often used validation functions.
 
-| Helper   | Parameters | Description                                                              |
-| -------- | ---------- | ------------------------------------------------------------------------ |
-| required | –          | Checks if a value is given                                               |
-| between  | min, max   | Checks if a number is between min and max. Min and max are not included. |
+| Helper   | Parameters | Description                                                                                             |
+| -------- | ---------- | ------------------------------------------------------------------------------------------------------- |
+| required | –          | Checks if a value is given. `required([]) === true`, `required(0) === true`, `required(false) === true` |
+| between  | min, max   | Checks if a number is between min and max. Min and max are not included.                                |
 
 ## Custom validators
 
