@@ -49,9 +49,5 @@
   },
   "files": [
     "dist"
-  ],
-  "dependencies": {
-    "js-yaml": "^3.14.0",
-    "mdast-util-toc": "^5.1.0"
-  }
+  ]
 }
