@@ -1,6 +1,6 @@
 # pruf
 
-framework agnostic validation library
+Framework agnostic validation library in JavaScript
 
 ![npm](https://img.shields.io/npm/v/pruf) ![NPM](https://img.shields.io/npm/l/pruf) ![Lines](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)
 
