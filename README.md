@@ -2,7 +2,7 @@
 
 Framework agnostic validation library in JavaScript
 
-![npm](https://img.shields.io/npm/v/pruf) ![NPM](https://img.shields.io/npm/l/pruf) ![Lines](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)
+[![npm](https://img.shields.io/npm/v/pruf)](https://www.npmjs.com/package/pruf) [![NPM](https://img.shields.io/npm/l/pruf)](https://opensource.org/licenses/MIT) ![Lines](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)
 
 ## Installation
 
