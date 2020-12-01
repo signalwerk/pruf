@@ -95,7 +95,7 @@ const traverse = (ruleObj, dataObj, options) => {
           groupResult = {
             ...groupResult,
             [item]: validObj,
-            [validKey]: result[validKey] && isValid,
+            [validKey]: groupResult[validKey] && isValid,
           };
         });
 
