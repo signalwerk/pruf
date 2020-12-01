@@ -95,7 +95,7 @@ describe("validate with grouping", () => {
       zip: 500,
     };
 
-    expect(validate(rule, data)).toEqual({
+    const result = {
       valid: false,
       name: {
         valid: false,
@@ -129,7 +129,84 @@ describe("validate with grouping", () => {
           required: false,
         },
       },
-    });
+    };
+
+    expect(validate(rule, data)).toEqual(result);
+  });
+
+  test("simple validation with valid last prop", async () => {
+    const rule = {
+      name: {
+        firsName: {
+          required,
+        },
+        familyName: {
+          required,
+        },
+      },
+      age: {
+        required,
+      },
+      zip: {
+        required,
+        between: between(999, 10000),
+      },
+      person: {
+        include: ["name.firsName", "age", "zip"],
+      },
+    };
+
+    const data = {
+      name: {
+        firsName: "Jane",
+        familyName: "",
+      },
+      age: null,
+      zip: 5000,
+    };
+
+    const result = {
+      valid: false,
+      name: {
+        valid: false,
+        firsName: {
+          valid: true,
+          required: true,
+        },
+        familyName: {
+          valid: false,
+          required: false,
+        },
+      },
+      age: {
+        valid: false,
+        required: false,
+      },
+      zip: {
+        valid: true,
+        required: true,
+        between: true,
+      },
+
+      person: {
+        valid: false,
+        "name.firsName": {
+          valid: true,
+          required: true,
+        },
+        age: {
+          valid: false,
+          required: false,
+        },
+        zip: {
+          valid: true,
+          required: true,
+          between: true,
+        },
+      },
+    };
+
+    expect(validate(rule, data)).toEqual(result);
   });
 
   test("validation wiht changed include key", async () => {
