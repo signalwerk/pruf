@@ -67,13 +67,13 @@ const result = {
 };
 ```
 
-## Validation `validate()`
+## Validation · `validate()`
 
-Pruf provides you a simple way to validate data by a set if rules.
+Pruf provides you a simple way to validate data by a set of rules.
 
 With `validate(rule, data, options?)` you validate an object `data` by a set of rules provided in a `rule` object. With an `options` object you can control some additional behaviour.
 
-### Validation first argument (`rule`)
+### Set of rule · `rule`
 
 The validation follows this set of rules. If a value in the `rule` object is a `function` this will be used as the validator for the corresponding `data`.  
 The `return` will have the same structure as the rule.
@@ -97,7 +97,7 @@ const rule = {
 };
 ```
 
-### Validation second argument (`data`)
+### Data · `data`
 
 Any kind of object. Including deeply nested objects.
 
@@ -109,7 +109,7 @@ const data = {
 };
 ```
 
-### Validation third argument (`options`)
+### Options · `options`
 
 #### Key `validKey`
 
@@ -175,7 +175,7 @@ const result = {
 };
 ```
 
-### Return value (`return`)
+### Return value · `return`
 
 The result of the function returns a new object where each object will have a `valid`-key with the result of the validation of the values and sub-values. Each validator will leave a key in the object.
 
@@ -211,7 +211,7 @@ const result = {
 | required | –          | Checks if a value is given. `required([]) === true`, `required(0) === true`, `required(false) === true` |
 | between  | min, max   | Checks if a number is between min and max. Min and max are not included.                                |
 
-## Validation messages (`reporter`)
+## Validation messages · `reporter`
 
 If an error-message on the result object is needed a helper function `reporter` is provided. The reporter transforms a `validator` result to a object with the message in an `error` key and a key `valid` with the result of the `validator`.
 
