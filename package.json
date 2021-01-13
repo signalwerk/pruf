@@ -1,6 +1,6 @@
 {
   "name": "pruf",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Stefan Huber, Signalwerk GmbH",
   "description": "framework agnostic validation library",
   "keywords": [
