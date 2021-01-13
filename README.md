@@ -128,7 +128,7 @@ The name of the key to detect groups during validation.
 ```js
 {
   isValidator: ({ value }) => typeof value === "function",
-  validate: ({ validator, data }) => validator(data),
+  validate: ({ validator, data, parent }) => validator(data, parent),
 }
 ```
 
@@ -258,6 +258,9 @@ const rule = {
   dataNo: { required, isPruf },
 };
 ```
+
+The first parameter to the validator is the `value` to validate. As second parameter there is the `parent` object.
+
 
 ## Grouping
 

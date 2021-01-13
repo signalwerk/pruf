@@ -40,13 +40,13 @@ const isValidLike = (value, validKey) => {
 
 const traverse = (ruleObj, dataObj, options) => {
   // set prefs
-  let { validKey, parent, visitor, includeKey } = options || {};
+  let { validKey, parent, visitor, includeKey, parentData } = options || {};
   parent = parent || {};
   validKey = validKey || "valid";
   includeKey = includeKey || "include";
   visitor = visitor || {
     isValidator: ({ value }) => isFunction(value),
-    validate: ({ validator, data }) => validator(data),
+    validate: ({ validator, data, parent }) => validator(data, parent),
   };
 
   let result = {
@@ -59,6 +59,7 @@ const traverse = (ruleObj, dataObj, options) => {
       const value = visitor.validate({
         validator: ruleObj[rule],
         data: dataObj,
+        parent: parentData,
       });
 
       const isValid = isValidLike(value, validKey);
@@ -74,6 +75,7 @@ const traverse = (ruleObj, dataObj, options) => {
         let validObj = traverse(ruleObj[rule], dataObj[rule], {
           ...options,
           parent: result,
+          parentData: dataObj,
         });
 
         result = {
@@ -83,7 +85,6 @@ const traverse = (ruleObj, dataObj, options) => {
         };
       } else {
         // handling for includes
-
         let groupResult = {
           [validKey]: true,
         };

@@ -413,6 +413,33 @@ describe("validate", () => {
     });
   });
 
+  test("checks with parent-access", async () => {
+    const rule = {
+      name: {
+        test: (value, parent) => parent.quote === "hello",
+      },
+      quote: {
+        test: (value, parent) => !!parent.name,
+      },
+    };
+    const data = {
+      name: "",
+      quote: "hello",
+    };
+
+    expect(validate(rule, data)).toEqual({
+      valid: false,
+      name: {
+        valid: true,
+        test: true,
+      },
+      quote: {
+        valid: false,
+        test: false,
+      },
+    });
+  });
+
   test("multiple checks in simple obj", async () => {
     const rule = {
       zip: {
