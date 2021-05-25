@@ -72,11 +72,15 @@ const traverse = (ruleObj, dataObj, options) => {
     } else {
       // handling without includes
       if (!hasProp(ruleObj, includeKey)) {
-        let validObj = traverse(ruleObj[rule], dataObj[rule], {
-          ...options,
-          parent: result,
-          parentData: dataObj,
-        });
+        let validObj = traverse(
+          ruleObj[rule],
+          hasProp(dataObj, rule) ? dataObj[rule] : undefined,
+          {
+            ...options,
+            parent: result,
+            parentData: dataObj,
+          }
+        );
 
         result = {
           ...result,

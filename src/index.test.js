@@ -413,6 +413,40 @@ describe("validate", () => {
     });
   });
 
+  test("require in simple obj with empt data", async () => {
+    const rule = {
+      name: {
+        required,
+      },
+    };
+    const data = {};
+
+    expect(validate(rule, data, { validKey: "$valid" })).toEqual({
+      $valid: false,
+      name: {
+        $valid: false,
+        required: false,
+      },
+    });
+  });
+
+  test("require in simple obj with null data", async () => {
+    const rule = {
+      name: {
+        required,
+      },
+    };
+    const data = null;
+
+    expect(validate(rule, data, { validKey: "$valid" })).toEqual({
+      $valid: false,
+      name: {
+        $valid: false,
+        required: false,
+      },
+    });
+  });
+
   test("checks with parent-access", async () => {
     const rule = {
       name: {
